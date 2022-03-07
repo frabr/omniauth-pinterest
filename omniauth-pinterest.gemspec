@@ -16,11 +16,11 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = OmniAuth::Pinterest::VERSION
 
-  gem.add_dependency 'omniauth', '~> 2.0'
-  gem.add_dependency 'omniauth-oauth2', '~> 1.1.2'
+  gem.add_dependency 'omniauth', '>= 1.0'
+  gem.add_dependency 'omniauth-oauth2', '>= 1.1.2'
 
-  gem.add_development_dependency 'rspec', '~> 2.7'
-  gem.add_development_dependency 'rack-test', '~> 0.6.3'
-  gem.add_development_dependency 'webmock', '~> 0'
-  gem.add_development_dependency 'simplecov', '~> 0'
+  gem.add_development_dependency 'rspec', '>= 2.7'
+  gem.add_development_dependency 'rack-test', '>= 0.6.3'
+  gem.add_development_dependency 'webmock', '>= 0'
+  gem.add_development_dependency 'simplecov', '>= 0'
 end
