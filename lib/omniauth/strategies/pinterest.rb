@@ -4,38 +4,55 @@ module OmniAuth
   module Strategies
     class Pinterest < OmniAuth::Strategies::OAuth2
       option :client_options, {
-        :site => 'https://api.pinterest.com/',
-        :authorize_url => 'https://api.pinterest.com/oauth/',
-        :token_url => 'https://api.pinterest.com/v1/oauth/token'
+        site: 'https://api.pinterest.com/',
+        authorize_url: 'https://www.pinterest.com/oauth/',
+        token_url: 'https://api.pinterest.com/v5/oauth/token'
       }
 
       def request_phase
-        options[:scope] ||= 'read_public'
+        options[:scope] ||= 'pins:read'
         options[:response_type] ||= 'code'
         super
       end
 
-      uid { raw_info['id'] }
+      def callback_url
+        options[:callback_url] || full_host + script_name + callback_path
+      end
 
-      info { raw_info }
+      uid { raw_info['username'] }
+
       
+      info { raw_info }
+
+
+      credentials do
+        puts access_token.params
+        hash = { 'token' => access_token.token }
+        hash['refresh_token'] = access_token.refresh_token if access_token.expires? && access_token.refresh_token
+        hash['expires_at'] = access_token.expires_at if access_token.expires?
+        hash['expires'] = access_token.expires?
+        hash['refresh_token_expires_at'] =
+          DateTime.now.strftime('%Q').to_i + access_token.params["refresh_token_expires_in"]
+        hash['scope'] = access_token.params["scope"]
+        hash
+      end
+
       def authorize_params
         super.tap do |params|
-          %w[redirect_uri].each do |v| 
+          %w[redirect_uri].each do |v|
             params[:redirect_uri] = request.params[v] if request.params[v]
-          end 
-        end 
-      end 
+          end
+        end
+      end
 
       def raw_info
-        fields = 'first_name,id,last_name,url,account_type,username,bio,image'
-        @raw_info ||= access_token.get("/v1/me/?fields=#{fields}").parsed['data']
+        puts access_token.inspect
+        @raw_info ||= access_token.get('/v5/user_account').parsed
       end
 
       def ssl?
         true
       end
-
     end
   end
 end
