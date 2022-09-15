@@ -25,6 +25,13 @@ module OmniAuth
       info { raw_info }
 
 
+      def callback_phase
+        options[:token_params][:headers] = {
+          Authorization: "Basic #{Base64.strict_encode64("#{options[:client_id]}:#{options[:client_secret]}")}"
+        }
+        super
+      end
+
       credentials do
         puts access_token.params
         hash = { 'token' => access_token.token }
